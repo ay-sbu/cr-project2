@@ -1,3 +1,3 @@
 # A Sample of Cryptography Hash Function (Hasht)
 
-- object that we works with them are `binlist` or `list[int]`
+- object that we works with them are `listint` or `list[int]`
