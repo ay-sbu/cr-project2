@@ -10,7 +10,7 @@ def hasht(plaintext: list[int], salt: list[int], work_factor: int) -> list[int]:
     - len(output) = commons.block_len
     '''
     result = plaintext
-    for i in range(work_factor):
+    for i in range(2**work_factor):
         result = work_factor_func(result, keys, salt)
     return result
 
@@ -82,19 +82,30 @@ def w(fin: list[int]) -> list[int]:
     third_8_bit = fin[sbox_input_len*2:sbox_input_len*3]
     forth_8_bit = fin[sbox_input_len*3:sbox_input_len*4]
 
-    col_index = helper.listbin_to_int([first_8_bit[0], first_8_bit[6], first_8_bit[7]])
-    first_row_index = helper.listbin_to_int(first_8_bit[1:6])
-    second_row_index = helper.listbin_to_int(second_8_bit[1:6])
-    third_row_index = helper.listbin_to_int(third_8_bit[1:6])
-    forth_row_index = helper.listbin_to_int(forth_8_bit[1:6])
-
-    r0 = sbox.sbox1[first_row_index][col_index]
-    r1 = sbox.sbox2[second_row_index][col_index]
-    r2 = sbox.sbox3[third_row_index][col_index]
-    r3 = sbox.sbox4[forth_row_index][col_index]
+    r0 = sbox_func(first_8_bit, 0)
+    r1 = sbox_func(second_8_bit, 1)
+    r2 = sbox_func(third_8_bit, 2)
+    r3 = sbox_func(forth_8_bit, 3)
 
     result = helper.listbin_add(r0, r1)
     result = helper.listbin_xor(result, r2)
     result = helper.listbin_add(result, r3)
 
     return result
+
+def sbox_func(fin: list[int], which: int) -> list[int]:
+    '''
+    - len(fin) = commons.block_len // 8
+    - len(output) = commons.block_len // 2
+    '''
+    row_index = helper.listbin_to_int(fin[1:6])
+    col_index = helper.listbin_to_int([fin[0], fin[6], fin[7]])
+    if which == 0:
+        return sbox.sbox1[row_index][col_index]
+    elif which == 1:
+        return sbox.sbox2[row_index][col_index]
+    elif which == 2:
+        return sbox.sbox3[row_index][col_index]
+    elif which == 3:
+        return sbox.sbox4[row_index][col_index]
+
